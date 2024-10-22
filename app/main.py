@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Response, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
+from app.api.api_users import router as users_router
 from app.db.db import get_database
 
 
@@ -26,6 +27,8 @@ app.add_middleware(
 
 # Include routers
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(users_router, prefix="/users", tags=["users"])  # Include the users router
+
 
 @app.get("/")
 def read_root():
