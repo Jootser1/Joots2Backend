@@ -48,10 +48,19 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 
 async def send_validation_email(email: str, token: str):
+    body = f"""
+    <html>
+        <body>
+            <p>Please validate your email by clicking on the following link:</p>
+            <a href="http://localhost:8000/auth/validate-email?token={token}">Validate Email</a>
+        </body>
+    </html>
+    """
+    
     message = MessageSchema(
         subject="Email Validation",
         recipients=[email],
-        body=f"Please validate your email by clicking on the following link: http://localhost:8000/auth/validate-email?token={token}",
+        body=body,
         subtype="html"
     )
     fm = FastMail(conf)

@@ -74,6 +74,23 @@ async def validate_email(token: str, db=Depends(get_database)):
 
     if result.modified_count == 0:
         raise HTTPException(status_code=400, detail="User not found or already validated")
+    
+    # Increment the variable in the AppInfos collection
+    app_info_result = db["app_infos"].update_one(
+        {"_id": "validation_count"},  # Assuming the document has an _id of "validation_count"
+        {"$inc": {"count": 1}},
+        upsert=True  # Create the document if it doesn't exist
+    )
+    if app_info_result.modified_count == 0 and app_info_result.upserted_id is None:
+        raise HTTPException(status_code=500, detail="Failed to update validation count")
+    
+    app_info = db["app_infos"].find_one({"_id": "validation_count"})
+    validation_count = app_info.get("count", 0) if app_info else 0
+    result = db["users"].update_one(
+        {"email": hashed_email},
+        {"$set": {"Jootserid": "Jootser" + str(validation_count)}},
+    )
+
 
     return {"msg": "Email validated successfully"}
 
