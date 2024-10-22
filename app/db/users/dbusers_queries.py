@@ -3,7 +3,6 @@ from fastapi import Depends
 
 def count_validated_users(db=Depends(get_database)):
     count = db.users.count_documents({'is_user_validated': True})
-    print(count)
     return count
 
 if __name__ == "__main__":
